@@ -1,0 +1,101 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Poetry
+poetry.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data directories
+data/
+tmp/
+temp/
+*.db
+*.sqlite
+
+# Chroma DB
+chroma/
+*.chroma
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Coverage / Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.benchmarks/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+.pyre/
+.pyre/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Profiling
+*.prof
+*.pstats
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Monitoring
+prometheus_data/
+grafana_data/
+
+# Backup files
+*.bak
+*.backup
+*_backup.*
+
+# WorkBuddy local data
+.workbuddy/

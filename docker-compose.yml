@@ -1,0 +1,63 @@
+services:
+  audit-rag:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: audit-rag
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      - ATRAG_ENVIRONMENT=production
+      - ATRAG_REDIS_URL=redis://redis:6379/0
+      - ATRAG_VECTOR_STORE_PERSIST_DIR=/app/data/chroma
+      - ATRAG_OPENAI_API_KEY=${ATRAG_OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - audit-rag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: audit-rag-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - audit-rag-network
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+  chromadb:
+    image: chromadb/chroma:0.4
+    container_name: audit-rag-chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+    networks:
+      - audit-rag-network
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+
+volumes:
+  redis_data:
+    driver: local
+  chroma_data:
+    driver: local
+
+networks:
+  audit-rag-network:
+    driver: bridge
