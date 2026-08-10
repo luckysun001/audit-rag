@@ -3,6 +3,7 @@
 提供 Embedding 服务和向量存储管理
 """
 
+import functools
 import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
@@ -33,6 +34,7 @@ class EmbeddingService:
     def __init__(self, settings: Optional[Settings] = None):
         self.settings = settings or get_settings()
         self._model = None
+        self._embed_texts_cache: Dict[tuple, List[List[float]]] = {}
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -58,8 +60,9 @@ class EmbeddingService:
             logger.warning(f"Failed to initialize embedding model: {e}")
             self._model = None
 
+    @functools.lru_cache(maxsize=4096)
     def embed_text(self, text: str) -> List[float]:
-        """生成文本的 Embedding 向量"""
+        """生成文本的 Embedding 向量（结果按文本缓存，避免重复计算/重复调用 API）"""
         if self._model is not None:
             try:
                 return self._model.embed_query(text)
@@ -70,14 +73,23 @@ class EmbeddingService:
         return self._mock_embed(text)
 
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
-        """批量生成 Embedding"""
+        """批量生成 Embedding（相同文本列表直接走缓存）"""
+        cache_key = tuple(texts)
+        if cache_key in self._embed_texts_cache:
+            return self._embed_texts_cache[cache_key]
+
         if self._model is not None:
             try:
-                return self._model.embed_documents(texts)
+                result = self._model.embed_documents(texts)
             except Exception as e:
                 logger.warning(f"Batch embedding failed, using mock: {e}")
+                result = [self._mock_embed(text) for text in texts]
+        else:
+            result = [self._mock_embed(text) for text in texts]
 
-        return [self._mock_embed(text) for text in texts]
+        if len(self._embed_texts_cache) < 1024:
+            self._embed_texts_cache[cache_key] = result
+        return result
 
     def _mock_embed(self, text: str) -> List[float]:
         """Mock embedding for fallback mode"""
