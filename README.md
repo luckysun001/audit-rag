@@ -77,7 +77,7 @@ cp .env.example .env
 
 ## 技术栈
 
-- Python 3.10+
+- Python 3.11+
 - LangChain（Prompt 管理、LLM 调用）
 - FastAPI（API 框架）
 - ChromaDB（向量数据库，TODO）
