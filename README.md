@@ -109,12 +109,17 @@ audit-rag/
 
 ```bash
 cd 03-banking-audit-suite/audit-rag
-poetry install          # 或 pip install -e .
+poetry install          # 按 poetry.lock 安装（如需重新解析用 poetry lock）
 cp .env.example .env    # 可选：填入 OPENAI_API_KEY 切换到真实 LLM
 python examples/01_credit_audit_demo.py
 ```
 
 不配置 API Key 也可以直接运行示例：引擎会输出 mock 回答，便于先跑通链路再接真实模型。
+
+> **依赖锁定**：本项目是带 API 与 Docker 镜像的应用型项目，因此**提交 `poetry.lock`**
+> （库项目才应忽略它）。lock 由 Poetry 2.x 生成（`lock-version 2.1`），
+> 若改动 `pyproject.toml` 的依赖约束，请一并执行 `poetry lock` 并提交新的 lock，
+> 否则 CI 与镜像构建会报 lock 与 pyproject 不一致。
 
 常用环境变量（前缀 `ATRAG_`）：
 

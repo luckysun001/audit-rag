@@ -17,13 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 安装 Poetry
-RUN pip install --no-cache-dir poetry==1.7.*
+# 必须与生成 poetry.lock 的版本一致：Poetry 2.x 产出的 lock-version 2.1
+# 无法被 1.7 读取，版本不匹配会直接让构建失败
+RUN pip install --no-cache-dir "poetry==2.*"
 
 # 配置 Poetry
 RUN poetry config virtualenvs.create false
 
-# 复制依赖文件
-COPY pyproject.toml ./
+# 复制依赖文件（连同 lock，保证镜像构建可复现）
+COPY pyproject.toml poetry.lock ./
 
 # 安装依赖
 RUN poetry install --no-interaction --no-ansi --without dev,docs
