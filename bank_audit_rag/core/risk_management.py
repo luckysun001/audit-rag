@@ -227,13 +227,34 @@ class RiskManagementService:
         lines = text.split("\n")
         current_point = None
 
+        # 严重程度关键词
+        severity_high = ["严重", "重大", "高危", "高风险"]
+        severity_mid = ["中等", "中度", "中风险"]
+        severity_low = ["一般", "轻微", "低风险"]
+
         for line in lines:
             line = line.strip()
+            if not line:
+                continue
+
+            # 严重程度标注行（如 "该风险属于中等程度"）：更新当前风险点，而非新建
+            if (
+                current_point is not None
+                and any(w in line for w in severity_high + severity_mid + severity_low)
+                and any(m in line for m in ["属于", "程度", "等级", "为"])
+            ):
+                if any(w in line for w in severity_high):
+                    current_point["severity"] = "高"
+                elif any(w in line for w in severity_mid):
+                    current_point["severity"] = "中"
+                else:
+                    current_point["severity"] = "低"
+                continue
 
             # 识别风险点
             risk_keywords = ["风险", "隐患", "问题", "不足", "缺陷", "异常", "偏离"]
-            if any(keyword in line for keyword in risk_keywords) and len(line) > 10:
-                # 排除评分行
+            if any(keyword in line for keyword in risk_keywords) and len(line) > 5:
+                # 排除评分行（如 "财务风险：80分"）
                 if "分" in line and any(char.isdigit() for char in line):
                     continue
 
@@ -244,13 +265,13 @@ class RiskManagementService:
                 }
                 risk_points.append(current_point)
 
-            # 识别严重程度
+            # 识别严重程度（处理风险描述与严重程度在同一行的情况）
             if current_point:
-                if any(word in line for word in ["严重", "重大", "高危", "高风险"]):
+                if any(word in line for word in severity_high):
                     current_point["severity"] = "高"
-                elif any(word in line for word in ["中等", "中度", "中风险"]):
+                elif any(word in line for word in severity_mid):
                     current_point["severity"] = "中"
-                elif any(word in line for word in ["一般", "轻微", "低风险"]):
+                elif any(word in line for word in severity_low):
                     current_point["severity"] = "低"
 
         return risk_points[:15]  # 最多返回15个风险点
@@ -276,33 +297,39 @@ class RiskManagementService:
         lines = text.split("\n")
         in_suggestion_section = False
 
+        # 建议段落的标题关键词
+        suggestion_keywords = [
+            "建议", "措施", "缓释", "化解", "防范", "应对",
+            "整改", "优化", "改进", "加强", "完善"
+        ]
+
         for line in lines:
             line = line.strip()
+            if not line:
+                continue
 
-            suggestion_keywords = [
-                "建议", "措施", "缓释", "化解", "防范", "应对",
-                "整改", "优化", "改进", "加强", "完善"
-            ]
+            # 列表项直接作为建议，且不会被上方的标题关键词误吞
+            if line.startswith(("- ", "• ", "* ", "1.", "2.", "3.", "4.", "5.")):
+                cleaned = line.lstrip("- •*12345. ").strip()
+                if cleaned and len(cleaned) > 3:
+                    suggestions.append(cleaned)
+                continue
 
+            # 遇到新标题停止（注意：用具体标题而非模糊词，避免 "总体评分" 等
+            # 正文行被误判为标题而提前结束建议提取）
+            if any(
+                line.startswith(title)
+                for title in ["三、", "四、", "五、", "六、", "【", "总体评价", "审计结论"]
+            ):
+                break
+
+            # 标记进入建议段落
             if any(keyword in line for keyword in suggestion_keywords):
                 in_suggestion_section = True
                 continue
 
-            if in_suggestion_section and line:
-                # 检查是否是列表项
-                if line.startswith(("- ", "• ", "* ", "1.", "2.", "3.", "4.", "5.")):
-                    cleaned = line.lstrip("- •*12345. ").strip()
-                    if cleaned and len(cleaned) > 8:
-                        suggestions.append(cleaned)
-                elif len(line) > 15 and not line.startswith("【") and not line.startswith("三、"):
-                    suggestions.append(line)
-
-                # 遇到新标题停止
-                if any(
-                    line.startswith(title)
-                    for title in ["三、", "四、", "五、", "六、", "【", "总体", "结论"]
-                ):
-                    break
+            if in_suggestion_section and len(line) > 15 and not line.startswith("【"):
+                suggestions.append(line)
 
         return suggestions[:10]
 

@@ -5,7 +5,7 @@
 
 import os
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 try:
     from dotenv import load_dotenv
@@ -93,6 +93,21 @@ class Settings:
     # API 配置
     api_host: str = field(default_factory=lambda: os.getenv("ATRAG_API_HOST", "0.0.0.0"))
     api_port: int = field(default_factory=lambda: _env_int("ATRAG_API_PORT", 8080))
+    api_cors_origins: List[str] = field(
+        default_factory=lambda: [
+            o.strip()
+            for o in os.getenv("ATRAG_API_CORS_ORIGINS", "*").split(",")
+            if o.strip()
+        ]
+    )
+    api_workers: int = field(default_factory=lambda: _env_int("ATRAG_API_WORKERS", 1))
+    api_reload: bool = field(
+        default_factory=lambda: os.getenv("ATRAG_API_RELOAD", "false").lower() == "true"
+    )
+    is_production: bool = field(
+        default_factory=lambda: os.getenv("ATRAG_ENV", "development").lower()
+        in ("prod", "production")
+    )
 
     def get(self, key: str, default: Any = None) -> Any:
         """获取配置项"""

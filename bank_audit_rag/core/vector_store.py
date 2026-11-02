@@ -92,20 +92,16 @@ class EmbeddingService:
         return result
 
     def _mock_embed(self, text: str) -> List[float]:
-        """Mock embedding for fallback mode"""
+        """Mock embedding for fallback mode (deterministic 128-dim)."""
         import hashlib
-        import struct
-
-        hash_bytes = hashlib.sha256(text.encode()).digest()
-        # 生成 128 维的 mock 向量
-        vector = []
-        for i in range(0, min(len(hash_bytes), 128 * 4), 4):
-            chunk = hash_bytes[i:i + 4] if i + 4 <= len(hash_bytes) else hash_bytes[i:] + b'\x00' * (4 - (len(hash_bytes) - i))
-            val = struct.unpack('f', chunk)[0]
-            vector.append(val)
-
-        # 归一化
         import math
+        import random
+
+        # sha256 只有 32 字节，不足以直接展开为 128 维，因此用它做种子，
+        # 用确定性 PRNG 生成固定的 128 维向量后再归一化。
+        seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
+        rng = random.Random(seed)
+        vector = [rng.uniform(-1.0, 1.0) for _ in range(128)]
         norm = math.sqrt(sum(v * v for v in vector)) or 1.0
         return [v / norm for v in vector]
 

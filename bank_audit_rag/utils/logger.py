@@ -51,6 +51,53 @@ class StructuredFormatter(logging.Formatter):
         return base
 
 
+class StructuredLogger(logging.Logger):
+    """
+    支持把关键字参数作为结构化字段（extra）记录的 Logger。
+
+    标准库 ``Logger.info("msg", foo=1)`` 会因无法识别的关键字参数而抛出
+    TypeError。本项目大量使用 ``logger.info("事件", loan_id=..., ...)`` 的写法，
+    因此这里拦截关键字参数，自动并入 ``extra``，使其能正常进入 StructuredFormatter。
+    """
+
+    def _emit_structured(
+        self,
+        level: int,
+        msg: str,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        **kwargs,
+    ) -> None:
+        if kwargs:
+            extra = dict(extra or {})
+            extra.update(kwargs)
+        super()._log(
+            level, msg, args, exc_info=exc_info, stack_info=stack_info, extra=extra
+        )
+
+    def debug(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.DEBUG):
+            self._emit_structured(logging.DEBUG, msg, args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.INFO):
+            self._emit_structured(logging.INFO, msg, args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.WARNING):
+            self._emit_structured(logging.WARNING, msg, args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.ERROR):
+            self._emit_structured(logging.ERROR, msg, args, **kwargs)
+
+    def critical(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.CRITICAL):
+            self._emit_structured(logging.CRITICAL, msg, args, **kwargs)
+
+
 def configure_logging(
     level: str = "INFO",
     format_type: str = "structured",
@@ -87,7 +134,9 @@ def configure_logging(
         root.addHandler(file_handler)
 
 
-# 根日志器
+# 根日志器（必须在创建任何 bank_audit_rag 的 logger 之前注册 StructuredLogger 类）
+logging.setLoggerClass(StructuredLogger)
+
 root_logger = logging.getLogger("bank_audit_rag")
 
 

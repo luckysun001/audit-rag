@@ -379,6 +379,20 @@ class CreditAuditService:
 
         for line in lines:
             line = line.strip()
+            if not line:
+                continue
+
+            # 风险等级标注行：更新当前问题/发现的风险等级，而不是新建一条
+            if current_issue is not None and any(
+                keyword in line for keyword in ["高风险", "中风险", "低风险"]
+            ) and any(m in line for m in ["属于", "等级", "程度", "为"]):
+                if "高风险" in line:
+                    current_issue["risk_level"] = "高风险"
+                elif "中风险" in line:
+                    current_issue["risk_level"] = "中风险"
+                else:
+                    current_issue["risk_level"] = "低风险"
+                continue
 
             # 识别问题行
             if any(keyword in line for keyword in ["问题", "发现", "不足", "缺陷", "风险"]):
@@ -388,17 +402,6 @@ class CreditAuditService:
                         "risk_level": "未评估",
                     }
                     issues.append(current_issue)
-
-            # 识别风险等级
-            elif current_issue and any(
-                keyword in line for keyword in ["高风险", "中风险", "低风险"]
-            ):
-                if "高风险" in line:
-                    current_issue["risk_level"] = "高风险"
-                elif "中风险" in line:
-                    current_issue["risk_level"] = "中风险"
-                else:
-                    current_issue["risk_level"] = "低风险"
 
         return issues
 
@@ -411,15 +414,31 @@ class CreditAuditService:
 
         for line in lines:
             line = line.strip()
+            if not line:
+                continue
 
             if any(keyword in line for keyword in ["违规", "违反", "不符合", "禁止"]):
-                if line and len(line) > 5:
+                # 排除 "禁止性规定：92分" 这类评分行
+                if "分" in line and any(char.isdigit() for char in line):
+                    continue
+
+                # 判断是否为新的违规项标题行；否则视为上一违规项的补充说明。
+                # 含逗号的长句通常是上一违规项的描述，而非新的违规项标题。
+                is_header = (
+                    current_violation is None
+                    or line.startswith(("发现", "存在", "条款", "第"))
+                    or line.startswith(("- ", "• ", "* ", "1.", "2.", "3."))
+                    or (len(line) < 12 and "，" not in line and "," not in line)
+                )
+                if is_header:
                     current_violation = {
                         "description": line,
                         "regulation": "",
                         "severity": "未评估",
                     }
                     violations.append(current_violation)
+                elif current_violation is not None:
+                    current_violation["description"] += " " + line
 
         return violations
 
@@ -444,10 +463,10 @@ class CreditAuditService:
                 elif line and len(line) > 10:
                     suggestions.append(line)
 
-                # 遇到空行或新标题停止
+                # 遇到空行或新标题停止（用具体标题词，避免正文中含 "总体/结论" 的建议被误截）
                 if not line or any(
                     keyword in line
-                    for keyword in ["【", "三、", "四、", "五、", "总体", "结论"]
+                    for keyword in ["【", "三、", "四、", "五、", "总体评价", "审计结论"]
                 ):
                     break
 

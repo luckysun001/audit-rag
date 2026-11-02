@@ -239,7 +239,7 @@ class AuditReportService:
             if self._is_section_title(stripped):
                 # 保存上一个章节
                 sections[current_section] = "\n".join(current_content)
-                current_section = stripped.strip(" 　、：:")
+                current_section = self._clean_section_title(stripped)
                 current_content = []
             else:
                 current_content.append(line)
@@ -280,6 +280,24 @@ class AuditReportService:
                 return True
 
         return False
+
+    def _clean_section_title(self, title: str) -> str:
+        """清洗章节标题，去除开头的序号标记与首尾标点。
+
+        例如 "二、审计发现" -> "审计发现"，"（一）审计范围" -> "审计范围"，
+        "【审计建议】" -> "审计建议"。清洗后的标题会作为 sections 字典的键，
+        供 _parse_audit_report_content 按名称检索章节内容。
+        """
+        import re
+
+        t = title.strip()
+        # 去掉开头的序号标记：X、 （X） 第X部分 第X章 等
+        t = re.sub(r"^[（(]?[一二三四五六七八九十]+[)）]?[、．.　 ]?", "", t)
+        t = re.sub(r"^第[一二三四五六七八九十]+部分[、．.　 ]?", "", t)
+        t = re.sub(r"^第[一二三四五六七八九十]+章[、．.　 ]?", "", t)
+        # 去掉首尾标点
+        t = t.strip(" 　、：:。．.（）()【】[]")
+        return t
 
     def _parse_overview_section(self, content: str, report: AuditReport) -> None:
         """解析审计概况章节"""
@@ -345,6 +363,13 @@ class AuditReportService:
         if not line or len(line) < 5:
             return False
 
+        # 风险等级标注行（如 "该问题属于高风险"）不是新发现，而是对上一发现的补充
+        if (
+            any(k in line for k in ["高风险", "中风险", "低风险"])
+            and any(m in line for m in ["属于", "等级", "程度", "为"])
+        ):
+            return False
+
         # 列表项格式
         if line.startswith(("- ", "• ", "* ")):
             return True
@@ -371,12 +396,12 @@ class AuditReportService:
 
         for line in lines:
             line = line.strip()
-            if line and len(line) > 10:
+            if line:
                 if line.startswith(("- ", "• ", "* ", "1.", "2.", "3.", "4.", "5.")):
                     cleaned = line.lstrip("- •*12345. ").strip()
                     if cleaned:
                         report.suggestions.append(cleaned)
-                elif not line.startswith("【") and not line.startswith("("):
+                elif not line.startswith("【") and not line.startswith("(") and len(line) > 5:
                     report.suggestions.append(line)
 
     def _categorize_findings_by_risk(self, report: AuditReport) -> None:

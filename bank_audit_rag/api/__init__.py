@@ -129,9 +129,9 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         logger.info("starting_bank_audit_rag_service")
 
         # 初始化核心服务
-        app.state.document_processor = __import__('bank_audit_rag').DocumentProcessor(settings)
-        app.state.vector_store_service = __import__('bank_audit_rag').VectorStoreService(settings)
-        app.state.rag_engine = __import__('bank_audit_rag').RAGQueryEngine(settings)
+        app.state.document_processor = __import__('bank_audit_rag').DocumentProcessor(settings=settings)
+        app.state.vector_store_service = __import__('bank_audit_rag').VectorStoreService(settings=settings)
+        app.state.rag_engine = __import__('bank_audit_rag').RAGQueryEngine(settings=settings)
 
         # 初始化审计专用服务
         app.state.credit_audit_service = CreditAuditService(app.state.rag_engine)

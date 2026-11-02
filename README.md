@@ -52,19 +52,19 @@
 - **配置中心**（`config/settings.py`）：dataclass + `.env` 自动加载（无 `python-dotenv` 时内置简易解析），
   覆盖 LLM / Embedding / 向量库 / 分块 / 检索 / 日志 / API 七组参数，单例 `get_settings()`
 - **结构化日志**（`utils/logger.py`）：`StructuredFormatter`、`Timer`、`LoggingContext`、`RequestLogger`
-- **FastAPI 入口**（`api/main.py`）：应用工厂 + CORS + `/health` + `/api/v1/stats`，依赖缺失时优雅降级
+- **FastAPI 入口**（`api/__init__.py`）：应用工厂 + CORS + `/health` + 信贷/合规/风险/报告/查询等审计业务端点，依赖缺失时优雅降级为 mock 模式
 
 ## 未实现（TODO）
 
 - 混合检索（BM25 + 向量）与相关性重排（rerank）
 - OCR：扫描件 / 图片型 PDF 的文字识别
 - 知识库增量更新：文档删除后向量库中对应向量的清理与索引重建
-- API 层扩充：认证鉴权、限流中间件，以及审计业务端点（当前仅 health / stats）
+- API 层扩充：认证鉴权、限流中间件（审计业务端点已在 `api/__init__.py` 实现，但缺少鉴权与限流）
 - Redis 缓存接入（依赖已声明，代码未使用）
 - 审计规则库：监管规则 YAML（条款、阈值、处罚依据）
 - 其他向量库后端（Milvus 等，`settings` 已预留 host/port 但未接线）
 - 前端界面：Streamlit 审计工作台
-- 测试覆盖：目前仅 `test_document_processor.py`，RAG 引擎 / 向量存储 / 四大服务缺测试
+- 测试覆盖：已补齐 `tests/` 下 settings / logger / vector_store / rag_engine / audit_prompts / 四大审计服务 / API 共 12 个测试模块，RAG 引擎与四大服务均通过 `FakeRAGEngine` 注入实现免 Key 确定性测试
 
 ---
 
@@ -91,7 +91,8 @@ audit-rag/
 │   │   ├── risk_management.py  # 风险评估
 │   │   └── audit_report.py     # 报告生成
 │   ├── api/
-│   │   └── main.py             # FastAPI 入口
+│   │   ├── __init__.py         # FastAPI 入口（应用工厂 + 审计业务端点）
+│   │   └── main.py             # 极简入口（/health、/api/v1/stats）
 │   └── utils/
 │       └── logger.py           # 结构化日志工具
 │
@@ -100,7 +101,19 @@ audit-rag/
 │   ├── 01_credit_audit_demo.py
 │   └── 02_compliance_and_risk_demo.py
 └── tests/
-    └── test_document_processor.py
+    ├── __init__.py
+    ├── conftest.py                 # FakeRAGEngine 等测试夹具
+    ├── test_settings.py            # 配置中心单例与类型转换
+    ├── test_logger.py              # 结构化日志工具
+    ├── test_vector_store.py        # Embedding 服务与内存向量库
+    ├── test_rag_engine.py          # RAG 查询引擎（mock 模式）
+    ├── test_audit_prompts.py       # 7 个审计 Prompt 模板
+    ├── test_credit_audit.py        # 信贷三查 / 合同合规
+    ├── test_compliance_audit.py    # 监管合规 / 反洗钱
+    ├── test_risk_management.py     # 信用风险评估
+    ├── test_audit_report.py        # 审计报告生成与导出
+    ├── test_api.py                 # FastAPI 端点（TestClient）
+    └── test_document_processor.py  # 文档处理（原有）
 ```
 
 ---
