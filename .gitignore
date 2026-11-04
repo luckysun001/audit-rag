@@ -100,3 +100,6 @@ grafana_data/
 
 # WorkBuddy local data
 .workbuddy/
+
+# Coverage reports
+coverage.xml
