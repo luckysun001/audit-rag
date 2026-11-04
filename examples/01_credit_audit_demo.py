@@ -42,7 +42,7 @@ def main():
     print(f"   总体评分: {loan_review_result.total_score:.2f}")
     print(f"   风险等级: {loan_review_result.risk_level}")
 
-    print(f"\n   分项评分:")
+    print("\n   分项评分:")
     print(f"   - 贷前调查: {loan_review_result.pre_loan_score:.2f}")
     print(f"   - 贷中审查: {loan_review_result.in_loan_score:.2f}")
     print(f"   - 贷后检查: {loan_review_result.post_loan_score:.2f}")
@@ -54,7 +54,7 @@ def main():
     print(f"   低风险问题: {len(loan_review_result.low_risk_issues)}")
 
     if loan_review_result.rectification_suggestions:
-        print(f"\n   整改建议:")
+        print("\n   整改建议:")
         for i, suggestion in enumerate(loan_review_result.rectification_suggestions[:5], 1):
             print(f"   {i}. {suggestion[:80]}...")
 
@@ -72,7 +72,7 @@ def main():
     print(f"   总体合规评分: {contract_result.total_compliance_score:.2f}")
     print(f"   合规等级: {contract_result.compliance_level}")
 
-    print(f"\n   分项评分:")
+    print("\n   分项评分:")
     print(f"   - 要素完整性: {contract_result.element_integrity_score:.2f}")
     print(f"   - 利率合规性: {contract_result.rate_compliance_score:.2f}")
     print(f"   - 担保合规性: {contract_result.guarantee_capacity_score:.2f}")
@@ -80,7 +80,7 @@ def main():
     print(f"\n   违规项数: {len(contract_result.violations)}")
 
     if contract_result.violations:
-        print(f"\n   主要违规项:")
+        print("\n   主要违规项:")
         for i, violation in enumerate(contract_result.violations[:3], 1):
             print(f"   {i}. {violation.get('description', '')[:80]}...")
 

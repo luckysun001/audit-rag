@@ -5,7 +5,7 @@
 注意: 使用此模块需要安装 langchain (pip install langchain)
 """
 
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 # ============================================================================
 # 信贷审计 Prompt 模板
 # ============================================================================

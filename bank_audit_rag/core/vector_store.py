@@ -4,7 +4,6 @@
 """
 
 import functools
-import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -156,7 +155,7 @@ class VectorStoreService:
         if self._store_type == "chroma":
             try:
                 from langchain_community.vectorstores import Chroma
-                store = Chroma.from_documents(
+                Chroma.from_documents(
                     documents=documents,
                     embedding=self._embedding._model or self._embedding,
                     collection_name=collection_name,

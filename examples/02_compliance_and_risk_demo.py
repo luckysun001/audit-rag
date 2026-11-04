@@ -53,7 +53,7 @@ def main():
     print(f"   发现风险数: {len(compliance_result.compliance_risks)}")
 
     if compliance_result.rectification_suggestions:
-        print(f"\n   整改建议:")
+        print("\n   整改建议:")
         for i, suggestion in enumerate(compliance_result.rectification_suggestions[:3], 1):
             print(f"   {i}. {suggestion[:100]}...")
 
@@ -90,7 +90,7 @@ def main():
     print(f"   总体风险等级: {risk_result.risk_level}")
     print(f"   总体评分: {risk_result.total_score:.2f}")
 
-    print(f"\n   各维度评分:")
+    print("\n   各维度评分:")
     print(f"   - 财务风险: {risk_result.financial_risk_score:.2f} (权重30%)")
     print(f"   - 经营风险: {risk_result.operational_risk_score:.2f} (权重25%)")
     print(f"   - 信用记录: {risk_result.credit_history_score:.2f} (权重20%)")
@@ -99,7 +99,7 @@ def main():
 
     print(f"\n   识别风险点: {len(risk_result.risk_points)}")
     if risk_result.risk_points:
-        print(f"\n   主要风险点:")
+        print("\n   主要风险点:")
         for i, point in enumerate(risk_result.risk_points[:3], 1):
             severity = point.get('severity', '未评级')
             category = point.get('category', '其他')
@@ -107,7 +107,7 @@ def main():
             print(f"   {i}. [{category}] [{severity}] {desc}...")
 
     if risk_result.risk_mitigation_suggestions:
-        print(f"\n   风险缓释建议:")
+        print("\n   风险缓释建议:")
         for i, suggestion in enumerate(risk_result.risk_mitigation_suggestions[:3], 1):
             print(f"   {i}. {suggestion[:80]}...")
 
@@ -126,7 +126,7 @@ def main():
     print(f"   审计期间: {report.audit_period}")
     print(f"   报告日期: {report.report_date}")
 
-    print(f"\n   审计发现统计:")
+    print("\n   审计发现统计:")
     print(f"   - 总计: {len(report.findings)} 项")
     print(f"   - 高风险: {len(report.high_risk_findings)} 项")
     print(f"   - 中风险: {len(report.medium_risk_findings)} 项")
@@ -148,7 +148,7 @@ def main():
     print("\n" + "=" * 70)
     print("  合规审计与风险管理流程演示完成")
     print("=" * 70)
-    print(f"""
+    print("""
   总结:
   - 完成 1 次监管合规检查
   - 完成 1 次反洗钱合规检查

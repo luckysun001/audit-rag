@@ -8,7 +8,6 @@ from bank_audit_rag.utils.logger import (
     StructuredFormatter,
     Timer,
     configure_logging,
-    get_logger,
 )
 
 
