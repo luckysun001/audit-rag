@@ -176,6 +176,27 @@ python examples/01_credit_audit_demo.py
 
 ---
 
+## 🧪 测试与持续集成 (CI)
+
+仓库已补齐 `tests/` 下的 12 个测试模块（settings / logger / vector_store / rag_engine / audit_prompts / 四大审计服务 / API），RAG 引擎与四大服务均通过 `FakeRAGEngine` 注入实现免 Key 确定性测试。
+
+所有改动都经过 GitHub Actions 自动验证（`.github/workflows/ci.yml`）：
+
+- **触发条件**：`push` 与 `pull_request` 均覆盖 `main` 与 `dev` 分支
+- **运行环境**：Ubuntu，Python 3.11 / 3.12 双版本矩阵（`fail-fast: false`）
+- **验证内容**：`poetry install --with dev` 后运行 `poetry run pytest`
+
+本地复现 CI 的等价命令：
+
+```bash
+poetry install --with dev
+poetry run pytest -v
+```
+
+> **依赖可复现性**：本项目提交 `poetry.lock`，CI 与本地均按 lock 安装；改动依赖约束后请一并 `poetry lock` 并提交，详见上方『快速开始』的依赖锁定说明。
+
+---
+
 ## 许可证
 
 MIT
