@@ -17,6 +17,7 @@ logger = get_logger(__name__)
 @dataclass
 class AuditFinding:
     """审计发现"""
+
     finding_id: str
     title: str
     description: str
@@ -31,6 +32,7 @@ class AuditFinding:
 @dataclass
 class AuditReport:
     """审计报告"""
+
     report_id: str
     project_name: str
     audited_unit: str
@@ -264,15 +266,29 @@ class AuditReportService:
         ]
 
         import re
+
         for pattern in title_patterns:
             if re.match(pattern, line):
                 return True
 
         # 常见的审计报告章节关键词
         section_keywords = [
-            "审计概况", "审计范围", "审计发现", "主要问题", "风险评估",
-            "审计建议", "整改建议", "审计结论", "总体评价", "整改要求",
-            "审计意见", "一、", "二、", "三、", "四、", "五、",
+            "审计概况",
+            "审计范围",
+            "审计发现",
+            "主要问题",
+            "风险评估",
+            "审计建议",
+            "整改建议",
+            "审计结论",
+            "总体评价",
+            "整改要求",
+            "审计意见",
+            "一、",
+            "二、",
+            "三、",
+            "四、",
+            "五、",
         ]
 
         for keyword in section_keywords:
@@ -307,7 +323,9 @@ class AuditReportService:
             line = line.strip()
 
             # 识别审计方法
-            if "方法" in line and any(keyword in line for keyword in ["检查", "抽样", "访谈", "分析", "复核"]):
+            if "方法" in line and any(
+                keyword in line for keyword in ["检查", "抽样", "访谈", "分析", "复核"]
+            ):
                 report.audit_methods.append(line)
 
             # 识别审计依据
@@ -364,9 +382,8 @@ class AuditReportService:
             return False
 
         # 风险等级标注行（如 "该问题属于高风险"）不是新发现，而是对上一发现的补充
-        if (
-            any(k in line for k in ["高风险", "中风险", "低风险"])
-            and any(m in line for m in ["属于", "等级", "程度", "为"])
+        if any(k in line for k in ["高风险", "中风险", "低风险"]) and any(
+            m in line for m in ["属于", "等级", "程度", "为"]
         ):
             return False
 
@@ -376,6 +393,7 @@ class AuditReportService:
 
         # 数字编号格式
         import re
+
         if re.match(r"^\d+[.、）)]", line):
             return True
 

@@ -6,13 +6,17 @@
 """
 
 from langchain_core.prompts import ChatPromptTemplate
+
 # ============================================================================
 # 信贷审计 Prompt 模板
 # ============================================================================
 
 # 贷款三查核查 Prompt
-LOAN_THREE_REVIEW_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位资深的银行信贷审计专家，具有20年以上的信贷审计经验。
+LOAN_THREE_REVIEW_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位资深的银行信贷审计专家，具有20年以上的信贷审计经验。
 请基于提供的文档信息，对贷款三查（贷前调查、贷中审查、贷后检查）情况进行专业审计核查。
 
 【审计核查标准】
@@ -50,20 +54,28 @@ LOAN_THREE_REVIEW_PROMPT = ChatPromptTemplate.from_messages([
 
 【文档信息】
 {context}
-"""),
-    ("human", """请对以下贷款进行三查核查分析：
+""",
+        ),
+        (
+            "human",
+            """请对以下贷款进行三查核查分析：
 贷款编号：{loan_id}
 借款人：{customer_name}
 贷款金额：{loan_amount:,} 元
 贷款期限：{loan_term} 个月
 担保方式：{guarantee_type}
 
-请给出详细的审计核查结果。"""),
-])
+请给出详细的审计核查结果。""",
+        ),
+    ]
+)
 
 # 信贷合同合规性检查 Prompt
-CONTRACT_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位银行合规审计专家，负责检查信贷合同的合规性。
+CONTRACT_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位银行合规审计专家，负责检查信贷合同的合规性。
 请基于提供的合同文本和监管政策，对合同的合规性进行全面检查。
 
 【合规检查要点】
@@ -108,15 +120,20 @@ CONTRACT_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
 
 【合同信息】
 {context}
-"""),
-    ("human", """请检查以下信贷合同的合规性：
+""",
+        ),
+        (
+            "human",
+            """请检查以下信贷合同的合规性：
 合同编号：{contract_id}
 合同类型：{contract_type}
 贷款金额：{loan_amount:,} 元
 签订日期：{sign_date}
 
-请给出详细的合规检查报告。"""),
-])
+请给出详细的合规检查报告。""",
+        ),
+    ]
+)
 
 
 # ============================================================================
@@ -124,8 +141,11 @@ CONTRACT_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
 # ============================================================================
 
 # 监管政策匹配 Prompt
-REGULATORY_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位银行监管合规专家，熟悉中国银保监会和人民银行的各项监管政策。
+REGULATORY_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位银行监管合规专家，熟悉中国银保监会和人民银行的各项监管政策。
 请基于提供的监管政策库，对审计内容进行合规性匹配和评估。
 
 【监管政策分类】
@@ -160,18 +180,26 @@ REGULATORY_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
 
 【政策库信息】
 {context}
-"""),
-    ("human", """请对以下审计内容进行监管政策匹配和合规性评估：
+""",
+        ),
+        (
+            "human",
+            """请对以下审计内容进行监管政策匹配和合规性评估：
 审计内容：{audit_content}
 业务条线：{business_line}
 监管类型：{regulatory_type}
 
-请给出详细的合规性评估报告。"""),
-])
+请给出详细的合规性评估报告。""",
+        ),
+    ]
+)
 
 # 反洗钱合规检查 Prompt
-AML_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位反洗钱合规审计专家，熟悉《反洗钱法》及相关监管规定。
+AML_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位反洗钱合规审计专家，熟悉《反洗钱法》及相关监管规定。
 请基于提供的客户交易信息，进行反洗钱合规性检查。
 
 【反洗钱检查要点】
@@ -207,15 +235,20 @@ AML_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
 
 【检查依据】
 {context}
-"""),
-    ("human", """请对以下客户进行反洗钱合规检查：
+""",
+        ),
+        (
+            "human",
+            """请对以下客户进行反洗钱合规检查：
 客户名称：{customer_name}
 客户类型：{customer_type}
 风险等级：{risk_level}
 检查期间：{check_period}
 
-请给出详细的反洗钱合规检查报告。"""),
-])
+请给出详细的反洗钱合规检查报告。""",
+        ),
+    ]
+)
 
 
 # ============================================================================
@@ -223,8 +256,11 @@ AML_COMPLIANCE_PROMPT = ChatPromptTemplate.from_messages([
 # ============================================================================
 
 # 财务报表真实性核查 Prompt
-FINANCIAL_VERIFICATION_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位资深的银行财务审计专家，擅长识别财务报表中的异常和风险。
+FINANCIAL_VERIFICATION_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位资深的银行财务审计专家，擅长识别财务报表中的异常和风险。
 请基于提供的财务数据，对财务报表的真实性进行专业核查。
 
 【财务核查要点】
@@ -263,14 +299,19 @@ FINANCIAL_VERIFICATION_PROMPT = ChatPromptTemplate.from_messages([
 
 【财务数据】
 {context}
-"""),
-    ("human", """请对以下企业财务报表进行真实性核查：
+""",
+        ),
+        (
+            "human",
+            """请对以下企业财务报表进行真实性核查：
 企业名称：{company_name}
 报表期间：{report_period}
 审计类型：{audit_type}
 
-请给出详细的财务核查报告，包括异常指标识别、风险评估和审计建议。"""),
-])
+请给出详细的财务核查报告，包括异常指标识别、风险评估和审计建议。""",
+        ),
+    ]
+)
 
 
 # ============================================================================
@@ -278,8 +319,11 @@ FINANCIAL_VERIFICATION_PROMPT = ChatPromptTemplate.from_messages([
 # ============================================================================
 
 # 信用风险评估 Prompt
-CREDIT_RISK_ASSESSMENT_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位银行信用风险评估专家，具有丰富的风险识别和评估经验。
+CREDIT_RISK_ASSESSMENT_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位银行信用风险评估专家，具有丰富的风险识别和评估经验。
 请基于提供的客户信息和历史数据，对客户的信用风险进行全面评估。
 
 【风险评估维度】
@@ -322,24 +366,32 @@ CREDIT_RISK_ASSESSMENT_PROMPT = ChatPromptTemplate.from_messages([
 
 【评估依据】
 {context}
-"""),
-    ("human", """请对以下客户进行信用风险评估：
+""",
+        ),
+        (
+            "human",
+            """请对以下客户进行信用风险评估：
 客户名称：{customer_name}
 客户类型：{customer_type}
 所属行业：{industry}
 授信额度：{credit_limit:,} 元
 评估日期：{assessment_date}
 
-请给出详细的信用风险评估报告，包括各维度评分、总体风险等级、主要风险点和风险缓释建议。"""),
-])
+请给出详细的信用风险评估报告，包括各维度评分、总体风险等级、主要风险点和风险缓释建议。""",
+        ),
+    ]
+)
 
 
 # ============================================================================
 # 审计报告生成 Prompt 模板
 # ============================================================================
 
-AUDIT_REPORT_GENERATION_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """你是一位资深的银行审计报告撰写专家，擅长撰写专业、规范、有深度的审计报告。
+AUDIT_REPORT_GENERATION_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """你是一位资深的银行审计报告撰写专家，擅长撰写专业、规范、有深度的审计报告。
 请基于审计发现和相关文档，撰写一份完整、专业的审计报告。
 
 【审计报告结构】
@@ -376,20 +428,26 @@ AUDIT_REPORT_GENERATION_PROMPT = ChatPromptTemplate.from_messages([
 
 【审计资料】
 {context}
-"""),
-    ("human", """请生成以下审计项目的审计报告：
+""",
+        ),
+        (
+            "human",
+            """请生成以下审计项目的审计报告：
 审计项目名称：{audit_project_name}
 被审计单位：{audited_unit}
 审计期间：{audit_period}
 审计类型：{audit_type}
 
-请基于审计发现生成完整的审计报告。"""),
-])
+请基于审计发现生成完整的审计报告。""",
+        ),
+    ]
+)
 
 
 # ============================================================================
 # 模板类
 # ============================================================================
+
 
 class BankAuditPrompts:
     """银行审计 Prompt 模板集合"""
@@ -420,6 +478,7 @@ class BankAuditPrompts:
     def list_prompts(cls) -> list:
         """列出所有可用的 Prompt 模板"""
         return [
-            attr for attr in dir(cls)
-            if not attr.startswith('_') and isinstance(getattr(cls, attr), ChatPromptTemplate)
+            attr
+            for attr in dir(cls)
+            if not attr.startswith("_") and isinstance(getattr(cls, attr), ChatPromptTemplate)
         ]

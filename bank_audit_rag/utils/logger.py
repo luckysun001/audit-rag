@@ -7,10 +7,10 @@ import logging
 import time
 from typing import Any, Optional
 
-
 # ============================================================================
 # 根日志配置
 # ============================================================================
+
 
 class StructuredFormatter(logging.Formatter):
     """结构化日志格式器"""
@@ -27,11 +27,29 @@ class StructuredFormatter(logging.Formatter):
         # 合并额外字段
         for key, value in record.__dict__.items():
             if key not in {
-                "name", "msg", "args", "levelname", "levelno", "pathname",
-                "filename", "module", "exc_info", "exc_text", "stack_info",
-                "lineno", "funcName", "created", "msecs", "relativeCreated",
-                "thread", "threadName", "processName", "process", "message",
-                "asctime", "taskName",
+                "name",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "message",
+                "asctime",
+                "taskName",
             }:
                 log_data[key] = value
 
@@ -40,8 +58,11 @@ class StructuredFormatter(logging.Formatter):
             log_data["exception"] = self.formatException(record.exc_info)
 
         # 构建日志行
-        extra_str = " ".join(f"{k}={v}" for k, v in log_data.items()
-                             if k not in ("timestamp", "level", "module", "message"))
+        extra_str = " ".join(
+            f"{k}={v}"
+            for k, v in log_data.items()
+            if k not in ("timestamp", "level", "module", "message")
+        )
         base = f"[{log_data['timestamp']}] {log_data['level']} {log_data['module']}: {log_data['message']}"
         if extra_str:
             base += f" | {extra_str}"
@@ -72,9 +93,7 @@ class StructuredLogger(logging.Logger):
         if kwargs:
             extra = dict(extra or {})
             extra.update(kwargs)
-        super()._log(
-            level, msg, args, exc_info=exc_info, stack_info=stack_info, extra=extra
-        )
+        super()._log(level, msg, args, exc_info=exc_info, stack_info=stack_info, extra=extra)
 
     def debug(self, msg, *args, **kwargs):
         if self.isEnabledFor(logging.DEBUG):
@@ -147,6 +166,7 @@ def get_logger(name: str = "bank_audit_rag") -> logging.Logger:
 # ============================================================================
 # 辅助工具
 # ============================================================================
+
 
 class Timer:
     """计时器工具"""

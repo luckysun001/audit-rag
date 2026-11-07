@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class RegulatoryComplianceResult:
     """监管合规评估结果"""
+
     audit_content: str
     business_line: str
 
@@ -36,6 +37,7 @@ class RegulatoryComplianceResult:
 @dataclass
 class AMLComplianceResult:
     """反洗钱合规检查结果"""
+
     customer_name: str
     customer_type: str
 
@@ -287,7 +289,9 @@ class ComplianceAuditService:
             result.identity_verification = "身份验证已完成" in answer or "身份信息完整" in answer
 
             # 受益所有人识别
-            result.beneficial_owner_identified = "受益所有人已识别" in answer or "受益所有人信息完整" in answer
+            result.beneficial_owner_identified = (
+                "受益所有人已识别" in answer or "受益所有人信息完整" in answer
+            )
 
             # 总体风险等级
             if "低风险" in answer:
@@ -315,19 +319,27 @@ class ComplianceAuditService:
 
         # 常见的政策关键词
         policy_keywords = [
-            "商业银行法", "贷款通则", "授信工作尽职指引",
-            "固定资产贷款管理暂行办法", "流动资金贷款管理暂行办法",
-            "个人贷款管理暂行办法", "商业银行风险管理指引",
-            "商业银行资本管理办法", "商业银行内部控制指引",
-            "反洗钱法", "商业银行合规风险管理指引",
+            "商业银行法",
+            "贷款通则",
+            "授信工作尽职指引",
+            "固定资产贷款管理暂行办法",
+            "流动资金贷款管理暂行办法",
+            "个人贷款管理暂行办法",
+            "商业银行风险管理指引",
+            "商业银行资本管理办法",
+            "商业银行内部控制指引",
+            "反洗钱法",
+            "商业银行合规风险管理指引",
         ]
 
         for keyword in policy_keywords:
             if keyword in text:
-                policies.append({
-                    "name": keyword,
-                    "applicable": True,
-                })
+                policies.append(
+                    {
+                        "name": keyword,
+                        "applicable": True,
+                    }
+                )
 
         return policies
 
@@ -349,7 +361,9 @@ class ComplianceAuditService:
                     }
                     risks.append(current_risk)
 
-            if current_risk and any(keyword in line for keyword in ["严重", "重大", "中等", "一般", "高", "中", "低"]):
+            if current_risk and any(
+                keyword in line for keyword in ["严重", "重大", "中等", "一般", "高", "中", "低"]
+            ):
                 if "严重" in line or "重大" in line or "高" in line:
                     current_risk["severity"] = "高风险"
                 elif "中等" in line or "中" in line:

@@ -1,9 +1,6 @@
 """风险管理服务单元测试（注入 FakeRAGEngine，验证解析与等级映射）。"""
 
-from bank_audit_rag.core.risk_management import (
-    CreditRiskAssessmentResult,
-    RiskManagementService,
-)
+from bank_audit_rag.core.risk_management import CreditRiskAssessmentResult, RiskManagementService
 from tests.conftest import FakeRAGEngine
 
 RISK_ANSWER = """
@@ -20,9 +17,7 @@ RISK_ANSWER = """
 
 def test_credit_risk_assessment_parse():
     svc = RiskManagementService(rag_engine=FakeRAGEngine(RISK_ANSWER))
-    r: CreditRiskAssessmentResult = svc.assess_credit_risk(
-        "甲公司", "企业", "制造", 2_000_000
-    )
+    r: CreditRiskAssessmentResult = svc.assess_credit_risk("甲公司", "企业", "制造", 2_000_000)
     assert r.customer_name == "甲公司"
     assert r.industry == "制造"
     assert r.financial_risk_score == 80.0

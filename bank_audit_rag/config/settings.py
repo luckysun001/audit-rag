@@ -59,16 +59,28 @@ class Settings:
     # LLM 配置
     llm_provider: str = "openai"
     llm_model: str = field(default_factory=lambda: os.getenv("ATRAG_LLM_MODEL", "gpt-4"))
-    llm_api_key: str = field(default_factory=lambda: os.getenv("ATRAG_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY", ""))
-    llm_base_url: str = field(default_factory=lambda: os.getenv("ATRAG_OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL", ""))
+    llm_api_key: str = field(
+        default_factory=lambda: os.getenv("ATRAG_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY", "")
+    )
+    llm_base_url: str = field(
+        default_factory=lambda: os.getenv("ATRAG_OPENAI_BASE_URL")
+        or os.getenv("OPENAI_BASE_URL", "")
+    )
     llm_temperature: float = field(default_factory=lambda: _env_float("ATRAG_LLM_TEMPERATURE", 0.3))
     llm_max_tokens: int = field(default_factory=lambda: _env_int("ATRAG_LLM_MAX_TOKENS", 4096))
 
     # Embedding 配置
     embedding_provider: str = "openai"
-    embedding_model: str = field(default_factory=lambda: os.getenv("ATRAG_EMBEDDING_MODEL", "text-embedding-ada-002"))
-    embedding_api_key: str = field(default_factory=lambda: os.getenv("ATRAG_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY", ""))
-    embedding_base_url: str = field(default_factory=lambda: os.getenv("ATRAG_OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL", ""))
+    embedding_model: str = field(
+        default_factory=lambda: os.getenv("ATRAG_EMBEDDING_MODEL", "text-embedding-ada-002")
+    )
+    embedding_api_key: str = field(
+        default_factory=lambda: os.getenv("ATRAG_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY", "")
+    )
+    embedding_base_url: str = field(
+        default_factory=lambda: os.getenv("ATRAG_OPENAI_BASE_URL")
+        or os.getenv("OPENAI_BASE_URL", "")
+    )
 
     # 向量存储配置
     vector_store_type: str = "chroma"
@@ -78,12 +90,16 @@ class Settings:
 
     # 文档处理配置
     chunk_size: int = field(default_factory=lambda: _env_int("ATRAG_DOCUMENT_CHUNK_SIZE", 1000))
-    chunk_overlap: int = field(default_factory=lambda: _env_int("ATRAG_DOCUMENT_CHUNK_OVERLAP", 200))
+    chunk_overlap: int = field(
+        default_factory=lambda: _env_int("ATRAG_DOCUMENT_CHUNK_OVERLAP", 200)
+    )
     max_file_size_mb: int = 50
 
     # 检索配置
     retrieval_top_k: int = field(default_factory=lambda: _env_int("ATRAG_RETRIEVER_TOP_K", 5))
-    retrieval_score_threshold: float = field(default_factory=lambda: _env_float("ATRAG_RETRIEVER_SCORE_THRESHOLD", 0.5))
+    retrieval_score_threshold: float = field(
+        default_factory=lambda: _env_float("ATRAG_RETRIEVER_SCORE_THRESHOLD", 0.5)
+    )
 
     # 日志配置
     log_level: str = field(default_factory=lambda: os.getenv("ATRAG_LOG_LEVEL", "INFO"))
@@ -95,9 +111,7 @@ class Settings:
     api_port: int = field(default_factory=lambda: _env_int("ATRAG_API_PORT", 8080))
     api_cors_origins: List[str] = field(
         default_factory=lambda: [
-            o.strip()
-            for o in os.getenv("ATRAG_API_CORS_ORIGINS", "*").split(",")
-            if o.strip()
+            o.strip() for o in os.getenv("ATRAG_API_CORS_ORIGINS", "*").split(",") if o.strip()
         ]
     )
     api_workers: int = field(default_factory=lambda: _env_int("ATRAG_API_WORKERS", 1))
@@ -115,10 +129,7 @@ class Settings:
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
-        return {
-            k: v for k, v in self.__dict__.items()
-            if not k.startswith("_")
-        }
+        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
 # 全局配置单例

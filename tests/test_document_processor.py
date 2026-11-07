@@ -20,7 +20,8 @@ def document_processor():
 def temp_text_file():
     """创建临时文本文件"""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
-        f.write("""
+        f.write(
+            """
 这是一个测试文档。
 包含多行文本内容。
 
@@ -34,7 +35,8 @@ def temp_text_file():
 
 第三部分：这是第三部分的内容，介绍部署和运维方案。
 支持 Docker 容器化部署，提供完整的监控和日志系统。
-""")
+"""
+        )
         file_path = Path(f.name)
 
     yield file_path
@@ -113,10 +115,7 @@ class TestDocumentMetadata:
             "audit_type": "财务审计",
         }
 
-        chunks, metadata = document_processor.process_document(
-            temp_text_file,
-            **custom_meta
-        )
+        chunks, metadata = document_processor.process_document(temp_text_file, **custom_meta)
 
         # 验证自定义元数据被正确传递
         assert metadata.custom_metadata["department"] == "审计部"

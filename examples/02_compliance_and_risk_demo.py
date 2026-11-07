@@ -101,9 +101,9 @@ def main():
     if risk_result.risk_points:
         print("\n   主要风险点:")
         for i, point in enumerate(risk_result.risk_points[:3], 1):
-            severity = point.get('severity', '未评级')
-            category = point.get('category', '其他')
-            desc = point.get('description', '')[:60]
+            severity = point.get("severity", "未评级")
+            category = point.get("category", "其他")
+            desc = point.get("description", "")[:60]
             print(f"   {i}. [{category}] [{severity}] {desc}...")
 
     if risk_result.risk_mitigation_suggestions:
@@ -148,7 +148,8 @@ def main():
     print("\n" + "=" * 70)
     print("  合规审计与风险管理流程演示完成")
     print("=" * 70)
-    print("""
+    print(
+        """
   总结:
   - 完成 1 次监管合规检查
   - 完成 1 次反洗钱合规检查
@@ -156,7 +157,8 @@ def main():
   - 生成 1 份完整审计报告
 
   所有功能模块运行正常！
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":

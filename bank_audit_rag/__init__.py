@@ -18,11 +18,7 @@ __author__ = "Bank Audit Tech Team"
 # 导入核心模块
 from bank_audit_rag.config.settings import Settings, get_settings
 from bank_audit_rag.core.audit_prompts import BankAuditPrompts
-from bank_audit_rag.core.audit_report import (
-    AuditFinding,
-    AuditReport,
-    AuditReportService,
-)
+from bank_audit_rag.core.audit_report import AuditFinding, AuditReport, AuditReportService
 from bank_audit_rag.core.compliance_audit import (
     AMLComplianceResult,
     ComplianceAuditService,
@@ -45,11 +41,7 @@ from bank_audit_rag.core.risk_management import (
     RiskAlert,
     RiskManagementService,
 )
-from bank_audit_rag.core.vector_store import (
-    EmbeddingService,
-    RAGResult,
-    VectorStoreService,
-)
+from bank_audit_rag.core.vector_store import EmbeddingService, RAGResult, VectorStoreService
 
 __all__ = [
     # Config

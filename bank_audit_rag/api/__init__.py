@@ -25,10 +25,7 @@ from bank_audit_rag.core.credit_audit import (
     CreditAuditService,
     LoanReviewResult,
 )
-from bank_audit_rag.core.risk_management import (
-    CreditRiskAssessmentResult,
-    RiskManagementService,
-)
+from bank_audit_rag.core.risk_management import CreditRiskAssessmentResult, RiskManagementService
 from bank_audit_rag.utils.logger import RequestLogger, get_logger, root_logger
 
 logger = get_logger(__name__)
@@ -38,6 +35,7 @@ request_logger = RequestLogger(root_logger)
 # Pydantic 模型
 class QueryRequest(BaseModel):
     """查询请求"""
+
     question: str = Field(..., description="问题")
     collection_name: Optional[str] = Field(None, description="集合名称")
     k: Optional[int] = Field(None, description="返回结果数量")
@@ -48,6 +46,7 @@ class QueryRequest(BaseModel):
 
 class LoanReviewRequest(BaseModel):
     """贷款三查核查请求"""
+
     loan_id: str = Field(..., description="贷款编号")
     customer_name: str = Field(..., description="借款人名称")
     loan_amount: float = Field(..., description="贷款金额（元）")
@@ -58,6 +57,7 @@ class LoanReviewRequest(BaseModel):
 
 class ContractComplianceRequest(BaseModel):
     """合同合规检查请求"""
+
     contract_id: str = Field(..., description="合同编号")
     contract_type: str = Field(..., description="合同类型")
     loan_amount: float = Field(..., description="贷款金额")
@@ -67,6 +67,7 @@ class ContractComplianceRequest(BaseModel):
 
 class RegulatoryComplianceRequest(BaseModel):
     """监管合规检查请求"""
+
     audit_content: str = Field(..., description="审计内容")
     business_line: str = Field(..., description="业务条线")
     regulatory_type: str = Field("all", description="监管类型")
@@ -75,6 +76,7 @@ class RegulatoryComplianceRequest(BaseModel):
 
 class AMLComplianceRequest(BaseModel):
     """反洗钱合规检查请求"""
+
     customer_name: str = Field(..., description="客户名称")
     customer_type: str = Field(..., description="客户类型")
     risk_level: str = Field("未评级", description="风险等级")
@@ -84,6 +86,7 @@ class AMLComplianceRequest(BaseModel):
 
 class CreditRiskRequest(BaseModel):
     """信用风险评估请求"""
+
     customer_name: str = Field(..., description="客户名称")
     customer_type: str = Field(..., description="客户类型")
     industry: str = Field(..., description="所属行业")
@@ -94,6 +97,7 @@ class CreditRiskRequest(BaseModel):
 
 class AuditReportRequest(BaseModel):
     """审计报告生成请求"""
+
     project_name: str = Field(..., description="审计项目名称")
     audited_unit: str = Field(..., description="被审计单位")
     audit_period: str = Field(..., description="审计期间")
@@ -104,6 +108,7 @@ class AuditReportRequest(BaseModel):
 
 class HealthResponse(BaseModel):
     """健康检查响应"""
+
     status: str
     version: str
     timestamp: str
@@ -129,9 +134,13 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         logger.info("starting_bank_audit_rag_service")
 
         # 初始化核心服务
-        app.state.document_processor = __import__('bank_audit_rag').DocumentProcessor(settings=settings)
-        app.state.vector_store_service = __import__('bank_audit_rag').VectorStoreService(settings=settings)
-        app.state.rag_engine = __import__('bank_audit_rag').RAGQueryEngine(settings=settings)
+        app.state.document_processor = __import__("bank_audit_rag").DocumentProcessor(
+            settings=settings
+        )
+        app.state.vector_store_service = __import__("bank_audit_rag").VectorStoreService(
+            settings=settings
+        )
+        app.state.rag_engine = __import__("bank_audit_rag").RAGQueryEngine(settings=settings)
 
         # 初始化审计专用服务
         app.state.credit_audit_service = CreditAuditService(app.state.rag_engine)

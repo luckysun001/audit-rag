@@ -67,8 +67,6 @@ def test_report_with_findings_data():
         {"title": "发现A", "description": "描述A"},
         {"title": "发现B", "description": "描述B"},
     ]
-    r = svc.generate_audit_report(
-        "项目Z", "单位W", "2024", "专项审计", findings_data=findings
-    )
+    r = svc.generate_audit_report("项目Z", "单位W", "2024", "专项审计", findings_data=findings)
     assert r.project_name == "项目Z"
     assert r.raw_content is not None

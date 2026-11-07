@@ -38,6 +38,7 @@ class RAGQueryEngine:
         try:
             if provider == "openai":
                 from langchain_openai import ChatOpenAI
+
                 self._llm = ChatOpenAI(
                     model=self.settings.llm_model,
                     openai_api_key=self.settings.llm_api_key,
@@ -45,7 +46,10 @@ class RAGQueryEngine:
                     temperature=self.settings.llm_temperature,
                     max_tokens=self.settings.llm_max_tokens,
                 )
-                logger.info("llm_initialized", extra={"provider": provider, "model": self.settings.llm_model})
+                logger.info(
+                    "llm_initialized",
+                    extra={"provider": provider, "model": self.settings.llm_model},
+                )
             else:
                 logger.warning(f"Unknown LLM provider: {provider}, using mock mode")
                 self._llm = None
@@ -117,7 +121,9 @@ class RAGQueryEngine:
             answer=answer,
             sources=[
                 {
-                    "content": doc.page_content[:200] if hasattr(doc, "page_content") else str(doc)[:200],
+                    "content": (
+                        doc.page_content[:200] if hasattr(doc, "page_content") else str(doc)[:200]
+                    ),
                     "metadata": doc.metadata if hasattr(doc, "metadata") else {},
                 }
                 for doc in sources
@@ -177,10 +183,16 @@ class RAGQueryEngine:
             else:
                 # 使用默认 Prompt
                 from langchain_core.prompts import ChatPromptTemplate
-                default_prompt = ChatPromptTemplate.from_messages([
-                    ("system", "你是一位银行审计专家。请基于以下文档信息回答问题。\n\n【文档信息】\n{context}"),
-                    ("human", "{question}"),
-                ])
+
+                default_prompt = ChatPromptTemplate.from_messages(
+                    [
+                        (
+                            "system",
+                            "你是一位银行审计专家。请基于以下文档信息回答问题。\n\n【文档信息】\n{context}",
+                        ),
+                        ("human", "{question}"),
+                    ]
+                )
                 messages = default_prompt.format_messages(context=context, question=question)
 
             response = self._llm.invoke(messages)

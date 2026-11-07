@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class LoanReviewResult:
     """贷款三查核查结果"""
+
     loan_id: str
     customer_name: str
 
@@ -45,6 +46,7 @@ class LoanReviewResult:
 @dataclass
 class ContractComplianceResult:
     """合同合规检查结果"""
+
     contract_id: str
     contract_type: str
 
@@ -383,9 +385,11 @@ class CreditAuditService:
                 continue
 
             # 风险等级标注行：更新当前问题/发现的风险等级，而不是新建一条
-            if current_issue is not None and any(
-                keyword in line for keyword in ["高风险", "中风险", "低风险"]
-            ) and any(m in line for m in ["属于", "等级", "程度", "为"]):
+            if (
+                current_issue is not None
+                and any(keyword in line for keyword in ["高风险", "中风险", "低风险"])
+                and any(m in line for m in ["属于", "等级", "程度", "为"])
+            ):
                 if "高风险" in line:
                     current_issue["risk_level"] = "高风险"
                 elif "中风险" in line:
@@ -506,8 +510,7 @@ class CreditAuditService:
         from langchain_core.documents import Document
 
         langchain_docs = [
-            Document(page_content=chunk.content, metadata=chunk.metadata)
-            for chunk in chunks
+            Document(page_content=chunk.content, metadata=chunk.metadata) for chunk in chunks
         ]
 
         # 索引

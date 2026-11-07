@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class RAGResult:
     """RAG 查询结果"""
+
     question: str
     answer: str = ""
     sources: List[Dict[str, Any]] = field(default_factory=list)
@@ -43,12 +44,16 @@ class EmbeddingService:
         try:
             if provider == "openai":
                 from langchain_openai import OpenAIEmbeddings
+
                 self._model = OpenAIEmbeddings(
                     model=self.settings.embedding_model,
                     openai_api_key=self.settings.embedding_api_key,
                     openai_api_base=self.settings.embedding_base_url or None,
                 )
-                logger.info("embedding_model_initialized", extra={"provider": provider, "model": self.settings.embedding_model})
+                logger.info(
+                    "embedding_model_initialized",
+                    extra={"provider": provider, "model": self.settings.embedding_model},
+                )
             else:
                 logger.warning(f"Unknown embedding provider: {provider}, using fallback")
                 self._model = None
@@ -123,9 +128,15 @@ class VectorStoreService:
 
         try:
             if store_type == "chroma":
-                from langchain_community.vectorstores import Chroma
+                from langchain_community.vectorstores import (  # noqa: F401  (optional-dependency probe)
+                    Chroma,
+                )
+
                 self._store_type = "chroma"
-                logger.info("vector_store_initialized", extra={"type": store_type, "path": self.settings.vector_store_path})
+                logger.info(
+                    "vector_store_initialized",
+                    extra={"type": store_type, "path": self.settings.vector_store_path},
+                )
             else:
                 self._store_type = "memory"
                 self._memory_store: Dict[str, List[Any]] = {}
@@ -155,13 +166,17 @@ class VectorStoreService:
         if self._store_type == "chroma":
             try:
                 from langchain_community.vectorstores import Chroma
+
                 Chroma.from_documents(
                     documents=documents,
                     embedding=self._embedding._model or self._embedding,
                     collection_name=collection_name,
                     persist_directory=self.settings.vector_store_path,
                 )
-                logger.info("documents_added_to_chroma", extra={"count": len(documents), "collection": collection_name})
+                logger.info(
+                    "documents_added_to_chroma",
+                    extra={"count": len(documents), "collection": collection_name},
+                )
                 return ids
             except Exception as e:
                 logger.warning(f"Failed to add to Chroma, storing in memory: {e}")
@@ -173,7 +188,10 @@ class VectorStoreService:
             self._memory_store[collection_name] = []
         self._memory_store[collection_name].extend(documents)
 
-        logger.info("documents_added_to_memory", extra={"count": len(documents), "collection": collection_name})
+        logger.info(
+            "documents_added_to_memory",
+            extra={"count": len(documents), "collection": collection_name},
+        )
         return ids
 
     def similarity_search(
@@ -193,6 +211,7 @@ class VectorStoreService:
         if self._store_type == "chroma":
             try:
                 from langchain_community.vectorstores import Chroma
+
                 store = Chroma(
                     collection_name=collection_name,
                     embedding_function=self._embedding._model or self._embedding,

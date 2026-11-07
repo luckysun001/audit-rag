@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class CreditRiskAssessmentResult:
     """信用风险评估结果"""
+
     customer_name: str
     customer_type: str
     industry: str
@@ -41,6 +42,7 @@ class CreditRiskAssessmentResult:
 @dataclass
 class RiskAlert:
     """风险预警"""
+
     alert_id: str
     alert_type: str
     severity: str
@@ -107,6 +109,7 @@ class RiskManagementService:
             信用风险评估结果
         """
         import datetime
+
         if assessment_date is None:
             assessment_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -197,7 +200,7 @@ class RiskManagementService:
                     result.guarantee_capacity_score,
                     result.industry_risk_score,
                 ]
-                result.total_score = sum(s * w for s, w in zip(scores, weights))
+                result.total_score = sum(s * w for s, w in zip(scores, weights, strict=False))
 
             # 确定风险等级
             result.risk_level = self._determine_risk_level(result.total_score)
@@ -299,8 +302,17 @@ class RiskManagementService:
 
         # 建议段落的标题关键词
         suggestion_keywords = [
-            "建议", "措施", "缓释", "化解", "防范", "应对",
-            "整改", "优化", "改进", "加强", "完善"
+            "建议",
+            "措施",
+            "缓释",
+            "化解",
+            "防范",
+            "应对",
+            "整改",
+            "优化",
+            "改进",
+            "加强",
+            "完善",
         ]
 
         for line in lines:

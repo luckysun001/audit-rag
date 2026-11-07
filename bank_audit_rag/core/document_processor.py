@@ -18,6 +18,7 @@ logger = get_logger(__name__)
 @dataclass
 class DocumentChunk:
     """文档块"""
+
     id: str
     content: str
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -26,6 +27,7 @@ class DocumentChunk:
 @dataclass
 class DocumentMetadata:
     """文档元数据"""
+
     document_id: str
     filename: str
     file_path: str
@@ -113,11 +115,7 @@ class DocumentProcessor:
 
         # 对于其他格式，尝试用 langchain 加载器
         try:
-            from langchain_community.document_loaders import (
-                TextLoader,
-                PyPDFLoader,
-                Docx2txtLoader,
-            )
+            from langchain_community.document_loaders import Docx2txtLoader, PyPDFLoader, TextLoader
 
             ext = file_path.suffix.lower()
             if ext == ".pdf":
@@ -173,12 +171,14 @@ class DocumentProcessor:
             words = text.split()
             chunks = []
             for i in range(0, len(words), self.chunk_size):
-                chunk_text = " ".join(words[i:i + self.chunk_size])
-                chunks.append(DocumentChunk(
-                    id=f"chunk_{i}",
-                    content=chunk_text,
-                    metadata={"chunk_index": i},
-                ))
+                chunk_text = " ".join(words[i : i + self.chunk_size])
+                chunks.append(
+                    DocumentChunk(
+                        id=f"chunk_{i}",
+                        content=chunk_text,
+                        metadata={"chunk_index": i},
+                    )
+                )
             return chunks
 
         splitter = RecursiveCharacterTextSplitter(
@@ -248,14 +248,16 @@ class DocumentProcessor:
         # 为每个块添加元数据
         for i, chunk in enumerate(chunks):
             chunk.id = f"{doc_id}_chunk_{i}"
-            chunk.metadata.update({
-                "document_id": doc_id,
-                "filename": file_path.name,
-                "chunk_index": i,
-                "document_type": document_type,
-                "business_line": business_line,
-                **kwargs,
-            })
+            chunk.metadata.update(
+                {
+                    "document_id": doc_id,
+                    "filename": file_path.name,
+                    "chunk_index": i,
+                    "document_type": document_type,
+                    "business_line": business_line,
+                    **kwargs,
+                }
+            )
 
         logger.info(
             "document_processed",
@@ -287,6 +289,7 @@ class DocumentStore:
         index_file = self.storage_path / "index.json"
         if index_file.exists():
             import json
+
             with open(index_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 for doc_id, doc_data in data.items():
@@ -295,6 +298,7 @@ class DocumentStore:
     def _save_index(self) -> None:
         """保存文档索引"""
         import json
+
         index_file = self.storage_path / "index.json"
         data = {
             doc_id: {

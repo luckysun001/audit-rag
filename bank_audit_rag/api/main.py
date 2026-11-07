@@ -42,6 +42,7 @@ def create_app():
     async def get_stats():
         """系统统计信息"""
         from bank_audit_rag.core.rag_engine import RAGQueryEngine
+
         engine = RAGQueryEngine()
         return engine.get_stats()
 
